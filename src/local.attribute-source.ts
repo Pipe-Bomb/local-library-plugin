@@ -1,4 +1,6 @@
 import {
+	AlbumAttributes,
+	AlbumInformationHelper,
 	ArtistInformationHelper,
 	AttributeSource,
 	AttributeSourceApiContext,
@@ -178,5 +180,14 @@ export class LocalAttributeSource implements AttributeSource {
 		helper: ArtistInformationHelper,
 	): Promise<AttributeValue[]> {
 		return [];
+	}
+
+	async getAlbumAttributeValues(
+		helper: AlbumInformationHelper,
+	): Promise<AlbumAttributes> {
+		return {
+			album: null,
+			artists: null,
+		};
 	}
 }
