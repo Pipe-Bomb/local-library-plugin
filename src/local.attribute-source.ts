@@ -154,7 +154,7 @@ export class LocalAttributeSource implements AttributeSource {
 				null;
 
 			if (picture) {
-				const data = Buffer.from(picture.data);
+				const buffer = Buffer.from(picture.data);
 				const extension = mime.getExtension(picture.format);
 
 				// todo: verify that extension is an image
@@ -162,7 +162,7 @@ export class LocalAttributeSource implements AttributeSource {
 					attributes.push({
 						key: "front",
 						value: {
-							data,
+							buffer,
 							extension,
 						},
 					});

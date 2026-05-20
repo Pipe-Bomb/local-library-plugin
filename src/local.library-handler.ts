@@ -60,8 +60,8 @@ export class LocalLibrary implements LibraryHandler {
 		return Buffer.from(trackId, "base64url").toString("utf-8");
 	}
 
-	private getPath(track: Track) {
-		return path.join(this.path, this.trackIdToPath(track.id));
+	private getPath(trackId: string) {
+		return path.join(this.path, this.trackIdToPath(trackId));
 	}
 
 	public async scan(context: TaskRunContext) {
@@ -108,14 +108,14 @@ export class LocalLibrary implements LibraryHandler {
 	}
 
 	async getAudioProducer(
-		track: Track,
+		trackId: string,
 		type: AudioProducerType | null,
 	): Promise<AudioProducer | null> {
 		if (type && type != "stream") {
 			return null;
 		}
 
-		const filePath = this.getPath(track);
+		const filePath = this.getPath(trackId);
 
 		return {
 			type: "stream",
