@@ -1,12 +1,13 @@
 import {
-	AlbumAttributes,
 	AlbumInformationHelper,
+	AlbumMetadata,
 	ArtistInformationHelper,
+	ArtistMetadata,
 	AttributeSource,
 	AttributeSourceApiContext,
 	AttributeValue,
-	TrackAttributes,
 	TrackInformationHelper,
+	TrackMetadata,
 } from "@sdk";
 import { parseStream } from "music-metadata";
 import mime from "mime";
@@ -71,11 +72,11 @@ export class LocalAttributeSource implements AttributeSource {
 
 	async getTrackAttributeValues(
 		helper: TrackInformationHelper,
-	): Promise<TrackAttributes> {
+	): Promise<TrackMetadata> {
 		const producer = await helper.getAudioProducer("stream");
 		if (!producer) {
 			return {
-				track: null,
+				attributes: null,
 				artists: null,
 			};
 		}
@@ -172,21 +173,23 @@ export class LocalAttributeSource implements AttributeSource {
 
 		return {
 			artists: null,
-			track: attributes,
+			attributes,
 		};
 	}
 
 	async getArtistAttributeValues(
-		helper: ArtistInformationHelper,
-	): Promise<AttributeValue[]> {
-		return [];
+		_helper: ArtistInformationHelper,
+	): Promise<ArtistMetadata> {
+		return {
+			attributes: null,
+		};
 	}
 
 	async getAlbumAttributeValues(
-		helper: AlbumInformationHelper,
-	): Promise<AlbumAttributes> {
+		_helper: AlbumInformationHelper,
+	): Promise<AlbumMetadata> {
 		return {
-			album: null,
+			attributes: null,
 			artists: null,
 		};
 	}
