@@ -121,10 +121,12 @@ export class LocalAttributeSource implements AttributeSource {
 
 		if (commonTags.genre) {
 			attributes.push(
-				...commonTags.genre.map((genre) => ({
-					key: "genre",
-					value: genre,
-				})),
+				...commonTags.genre
+					.flatMap((genre) => genre.split(";"))
+					.map((genre) => ({
+						key: "genre",
+						value: genre,
+					})),
 			);
 		}
 
