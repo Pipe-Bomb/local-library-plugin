@@ -1,4 +1,12 @@
 {
 	"plugin.local-library.name": "Local Library",
-	"task.plugin.local-library.scan.name": "Scan Local Library"
+	"task.plugin.local-library.scan.name": "Scan Local Library",
+
+	"plugin.local-library.attribute.track.file-metadata.album.name": "Album",
+	"plugin.local-library.attribute.track.file-metadata.artist.name": "Artist",
+	"plugin.local-library.attribute.track.file-metadata.front.name": "Cover Art",
+	"plugin.local-library.attribute.track.file-metadata.genre.name": "Genre",
+	"plugin.local-library.attribute.track.file-metadata.label.name": "Label",
+	"plugin.local-library.attribute.track.file-metadata.release_type.name": "Release Type",
+	"plugin.local-library.attribute.track.file-metadata.title.name": "Title"
 }
