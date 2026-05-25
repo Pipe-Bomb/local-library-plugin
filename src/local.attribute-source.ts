@@ -61,6 +61,20 @@ export class LocalAttributeSource implements AttributeSource {
 				key: "release_type",
 				type: "string",
 				supportsMultiple: true,
+				formatter: (value) => {
+					switch (value) {
+						case "album":
+							return "Album";
+						case "single":
+							return "Single";
+						case "ep":
+							return "EP";
+						case "lp":
+							return "LP";
+						default:
+							return value;
+					}
+				},
 			},
 			{
 				key: "front",
