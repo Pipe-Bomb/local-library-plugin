@@ -88,10 +88,13 @@ export class LocalLibrary implements LibraryHandler {
 			}
 
 			const trackId = this.generateTrackId(file);
-			await this.api.addTrack({
-				id: trackId,
-				title: path.basename(file, path.extname(file)),
-			});
+			await this.api.addTrack(
+				{
+					id: trackId,
+					title: path.basename(file, path.extname(file)),
+				},
+				context.getRunId(),
+			);
 
 			const progress = Math.round(((index + 1) / contents.length) * 1000) / 10;
 			this.logger.debug(`Scanning "${this.path}"... (${progress}%)`);
@@ -107,6 +110,24 @@ export class LocalLibrary implements LibraryHandler {
 		);
 	}
 
+	async doTracksExist(trackIds: string[]): Promise<string[]> {
+		const existingIds: string[] = [];
+		for (const trackId of trackIds) {
+			const filePath = this.getPath(trackId);
+			try {
+				await stat(filePath);
+				existingIds.push(filePath);
+			} catch (e: any) {
+				if (e?.code == "ENOENT") {
+					this.logger.warn(`File ${filePath} no longer exists`);
+					continue;
+				}
+				this.logger.warn(`Failed to get file stats for ${filePath}`);
+			}
+		}
+		return existingIds;
+	}
+
 	async getAudioProducer(
 		trackId: string,
 		type: AudioProducerType | null,
@@ -116,36 +137,43 @@ export class LocalLibrary implements LibraryHandler {
 		}
 
 		const filePath = this.getPath(trackId);
+		try {
+			const stats = await stat(filePath);
 
-		return {
-			type: "stream",
-			cacheable: false,
-			getMetadata: async () => {
-				const stats = await stat(filePath);
-				const mimeType = mime.getType(filePath);
+			return {
+				type: "stream",
+				cacheable: false,
+				getMetadata: async () => {
+					const mimeType = mime.getType(filePath);
+					if (!mimeType) {
+						throw new Error("Unknown mime type");
+					}
 
-				if (!mimeType) {
-					throw new Error("Unknown mime type");
-				}
-
-				return {
-					size: stats.size,
-					mimeType,
-				};
-			},
-			getStream: async () => createReadStream(filePath),
-			getDuration: async () => {
-				const metadata = await parseStream(createReadStream(filePath));
-				if (metadata.format.duration) {
-					return metadata.format.duration;
-				}
-				throw new Error("Failed to get duration");
-			},
-			getPart: async (start, end) =>
-				createReadStream(filePath, {
-					start,
-					end,
-				}),
-		};
+					return {
+						size: stats.size,
+						mimeType,
+					};
+				},
+				getStream: async () => createReadStream(filePath),
+				getDuration: async () => {
+					const metadata = await parseStream(createReadStream(filePath));
+					if (metadata.format.duration) {
+						return metadata.format.duration;
+					}
+					throw new Error("Failed to get duration");
+				},
+				getPart: async (start, end) =>
+					createReadStream(filePath, {
+						start,
+						end,
+					}),
+			};
+		} catch (e: any) {
+			if (e?.code == "ENOENT") {
+				await this.api.removeTrack(trackId);
+				throw new Error(`File "${filePath}" not found`);
+			}
+			throw e;
+		}
 	}
 }
