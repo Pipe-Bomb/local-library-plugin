@@ -23,21 +23,6 @@ export default class Plugin implements PipeBomb.Plugin {
 			}
 		});
 
-		// temporary
-		// const library = new LocalLibrary(
-		// 	this,
-		// 	"/home/eyezah/Desktop/Music-Demo",
-		// 	"Music Demo",
-		// );
-		// this.api.registerLibraryHandler(library);
-
-		// const library2 = new LocalLibrary(
-		// 	this,
-		// 	"/home/eyezah/Desktop/Scott-USB",
-		// 	"Scott USB",
-		// );
-		// this.api.registerLibraryHandler(library2);
-
 		const attributeSource = new LocalAttributeSource();
 		this.api.registerAttributeSource(attributeSource);
 	}
