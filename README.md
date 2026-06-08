@@ -1,4 +1,7 @@
-# Local Library Plugin
+<h1>
+    <img src="https://raw.githubusercontent.com/Pipe-Bomb/.github/refs/heads/master/assets/logos/Pipe%20Bomb%20no%20background%20w%20outline.png" width="40" />
+    Local Library Plugin
+</h1>
 
 Scans a directory for audio files and automatically adds them to Pipe Bomb. This plugin also scans audio streams for various audio tags in order to create attributes. This is mostly relevant for local files added by the plugin itself, but it can also detect embedded tags in audio streams from other libraries, if they exist.
 
