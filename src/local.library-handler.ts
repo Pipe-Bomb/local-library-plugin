@@ -3,12 +3,10 @@ import type {
 	AudioProducerType,
 	LibraryHandler,
 	LibraryHandlerApiContext,
-	LibraryTrackInformationHelper,
 	Logger,
 	TaskRunContext,
 	Track,
 } from "@sdk";
-import Plugin from "./main.js";
 import * as fs from "fs/promises";
 import path from "path";
 import { compare } from "./utils.js";
@@ -21,16 +19,14 @@ import mime from "mime";
 
 export class LocalLibrary implements LibraryHandler {
 	public readonly id: string;
-	private readonly logger: Logger;
 	private readonly tracks: Track[] = [];
 	private api!: LibraryHandlerApiContext;
 
 	constructor(
-		private readonly plugin: Plugin,
 		private readonly path: string,
 		private readonly name: string,
+		private readonly logger: Logger,
 	) {
-		this.logger = plugin.getLogger();
 		this.id = createHash("sha1").update(path).digest("hex");
 		this.logger.log(`Created local library for "${path}" (${this.id})`);
 
@@ -43,12 +39,6 @@ export class LocalLibrary implements LibraryHandler {
 
 	public enable(libraryApiContext: LibraryHandlerApiContext): void {
 		this.api = libraryApiContext;
-
-		this.api.registerPluginTask({
-			id: `scan_${this.id}`,
-			resumable: false,
-			run: (context) => this.scan(context),
-		});
 	}
 
 	private generateTrackId(path: string) {
@@ -64,6 +54,41 @@ export class LocalLibrary implements LibraryHandler {
 		return path.join(this.path, this.trackIdToPath(trackId));
 	}
 
+	public scanTrackPath(trackPath: string) {
+		return this.scanTrackPathWithRunId(trackPath, null);
+	}
+
+	private async scanTrackPathWithRunId(
+		trackPath: string,
+		runId: string | null,
+	) {
+		if (trackPath.startsWith("/")) {
+			trackPath = trackPath.substring(1);
+		}
+
+		const filePath = path.join(this.path, trackPath);
+
+		const lstat = await fs.lstat(filePath);
+		if (!lstat.isFile()) {
+			return false;
+		}
+
+		const extension = path.extname(trackPath).substring(1);
+		if (!AUDIO_EXTENSIONS.includes(extension)) {
+			return false;
+		}
+
+		const trackId = this.generateTrackId(trackPath);
+		await this.api.addTrack(
+			{
+				id: trackId,
+				title: path.basename(trackPath, path.extname(trackPath)),
+			},
+			runId,
+		);
+		return true;
+	}
+
 	public async scan(context: TaskRunContext) {
 		this.logger.debug(`Scanning "${this.path}"...`);
 
@@ -75,26 +100,8 @@ export class LocalLibrary implements LibraryHandler {
 
 		for (const [index, file] of contents.entries()) {
 			context.update(index / contents.length);
-			const filePath = path.join(this.path, file);
 
-			const lstat = await fs.lstat(filePath);
-			if (!lstat.isFile()) {
-				continue;
-			}
-
-			const extension = path.extname(file).substring(1);
-			if (!AUDIO_EXTENSIONS.includes(extension)) {
-				continue;
-			}
-
-			const trackId = this.generateTrackId(file);
-			await this.api.addTrack(
-				{
-					id: trackId,
-					title: path.basename(file, path.extname(file)),
-				},
-				context.getRunId(),
-			);
+			await this.scanTrackPathWithRunId(file, context.getRunId());
 
 			const progress = Math.round(((index + 1) / contents.length) * 1000) / 10;
 			this.logger.debug(`Scanning "${this.path}"... (${progress}%)`);

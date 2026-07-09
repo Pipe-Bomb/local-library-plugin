@@ -7,6 +7,8 @@ export default class Plugin implements PipeBomb.Plugin {
 	private api!: PipeBomb.PluginApiContext;
 	private logger!: PipeBomb.Logger;
 
+	private library: LocalLibrary | null = null;
+
 	enable(apiContext: PipeBomb.PluginApiContext) {
 		this.api = apiContext;
 		this.logger = apiContext.getLogger();
@@ -18,8 +20,8 @@ export default class Plugin implements PipeBomb.Plugin {
 
 		config.getLibraryPath().then((path) => {
 			if (path) {
-				const library = new LocalLibrary(this, path, "Local Library");
-				this.api.registerLibraryHandler(library);
+				this.library = new LocalLibrary(path, "Local Library", this.logger);
+				this.api.registerLibraryHandler(this.library);
 			}
 		});
 
@@ -27,7 +29,9 @@ export default class Plugin implements PipeBomb.Plugin {
 		this.api.registerAttributeSource(attributeSource);
 	}
 
-	disable() {}
+	disable() {
+		this.library = null;
+	}
 
 	public getLogger() {
 		return this.logger;
@@ -35,5 +39,9 @@ export default class Plugin implements PipeBomb.Plugin {
 
 	public getApi() {
 		return this.api;
+	}
+
+	public getLibrary() {
+		return this.library;
 	}
 }
