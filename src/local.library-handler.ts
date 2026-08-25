@@ -6,7 +6,7 @@ import type {
 	Logger,
 	TaskRunContext,
 	Track,
-} from "@sdk";
+} from "@pipe-bomb/plugin-sdk";
 import * as fs from "fs/promises";
 import path from "path";
 import { compare } from "./utils.js";

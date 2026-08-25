@@ -8,7 +8,7 @@ import {
 	AttributeValue,
 	TrackInformationHelper,
 	TrackMetadata,
-} from "@sdk";
+} from "@pipe-bomb/plugin-sdk";
 import { parseStream } from "music-metadata";
 import mime from "mime";
 

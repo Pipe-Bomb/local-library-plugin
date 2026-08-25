@@ -1,4 +1,4 @@
-import type PipeBomb from "@sdk";
+import type PipeBomb from "@pipe-bomb/plugin-sdk";
 import { LocalLibrary } from "./local.library-handler.js";
 import { LocalAttributeSource } from "./local.attribute-source.js";
 import { LocalLibraryConfigManager } from "./local-library.config-manager.js";

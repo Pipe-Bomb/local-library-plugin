@@ -8,6 +8,7 @@
 	},
 	"type": "module",
 	"devDependencies": {
+		"@pipe-bomb/plugin-sdk": "^0.0.2",
 		"@types/node": "^25.5.2",
 		"nodemon": "^3.1.14",
 		"rimraf": "^6.1.3",
