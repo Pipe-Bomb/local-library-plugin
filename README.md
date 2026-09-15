@@ -34,6 +34,6 @@ Local Library only recognizes a few file extensions as audio files, outlined in 
 
 ## Roadmap
 
-- ➖ Support multiple concurrent libraries
+- ✅ Support multiple concurrent libraries
 
-- ➖ Specify custom ID for library instead of relying on library path
+- ✅ Specify custom ID for library instead of relying on library path

@@ -18,13 +18,13 @@ import { parseStream } from "music-metadata";
 import mime from "mime";
 
 export class LocalLibrary implements LibraryHandler {
-	public readonly id: string;
 	private readonly tracks: Track[] = [];
 	private api!: LibraryHandlerApiContext;
 
 	constructor(
-		private readonly path: string,
-		private readonly name: string,
+		public readonly id: string,
+		private path: string,
+		private name: string,
 		private readonly logger: Logger,
 	) {
 		this.id = createHash("sha1").update(path).digest("hex");
@@ -35,6 +35,18 @@ export class LocalLibrary implements LibraryHandler {
 
 	getName() {
 		return this.name;
+	}
+
+	setName(name: string) {
+		this.name = name;
+	}
+
+	getPath() {
+		return this.path;
+	}
+
+	setPath(path: string) {
+		this.path = path;
 	}
 
 	public enable(libraryApiContext: LibraryHandlerApiContext): void {
@@ -50,7 +62,7 @@ export class LocalLibrary implements LibraryHandler {
 		return Buffer.from(trackId, "base64url").toString("utf-8");
 	}
 
-	private getPath(trackId: string) {
+	private getTrackPath(trackId: string) {
 		return path.join(this.path, this.trackIdToPath(trackId));
 	}
 
@@ -120,7 +132,7 @@ export class LocalLibrary implements LibraryHandler {
 	async doTracksExist(trackIds: string[]): Promise<string[]> {
 		const existingIds: string[] = [];
 		for (const trackId of trackIds) {
-			const filePath = this.getPath(trackId);
+			const filePath = this.getTrackPath(trackId);
 			try {
 				await stat(filePath);
 				existingIds.push(filePath);
@@ -143,7 +155,7 @@ export class LocalLibrary implements LibraryHandler {
 			return null;
 		}
 
-		const filePath = this.getPath(trackId);
+		const filePath = this.getTrackPath(trackId);
 		try {
 			const stats = await stat(filePath);
 
