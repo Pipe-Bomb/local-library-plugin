@@ -41,4 +41,8 @@ export class LibraryManager {
 			}
 		}
 	}
+
+	getLibraries() {
+		return Array.from(this.libraries.values());
+	}
 }

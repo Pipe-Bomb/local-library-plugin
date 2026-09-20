@@ -1,5 +1,4 @@
 import type PipeBomb from "@pipe-bomb/plugin-sdk";
-import { LocalLibrary } from "./local.library-handler.js";
 import { LocalAttributeSource } from "./local.attribute-source.js";
 import { LocalLibraryConfigManager } from "./local-library.config-manager.js";
 import { Library } from "./interface/library.interface.js";
@@ -9,7 +8,7 @@ export default class Plugin implements PipeBomb.Plugin {
 	private api!: PipeBomb.PluginApiContext;
 	private logger!: PipeBomb.Logger;
 
-	private library: LocalLibrary | null = null;
+	private manager: LibraryManager | null = null;
 	private disableCallbacks = new Set<() => void>();
 
 	enable(apiContext: PipeBomb.PluginApiContext) {
@@ -38,22 +37,17 @@ export default class Plugin implements PipeBomb.Plugin {
 	}
 
 	disable() {
-		this.library = null;
 		for (const callback of this.disableCallbacks) {
 			callback();
 		}
 		this.disableCallbacks = new Set();
 	}
 
-	public getLogger() {
-		return this.logger;
-	}
+	getLibraries() {
+		if (!this.manager) {
+			return [];
+		}
 
-	public getApi() {
-		return this.api;
-	}
-
-	public getLibrary() {
-		return this.library;
+		return this.manager.getLibraries();
 	}
 }
