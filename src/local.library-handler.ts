@@ -27,7 +27,6 @@ export class LocalLibrary implements LibraryHandler {
 		private name: string,
 		private readonly logger: Logger,
 	) {
-		this.id = createHash("sha1").update(path).digest("hex");
 		this.logger.log(`Created local library for "${path}" (${this.id})`);
 
 		// this.scan().catch(plugin.getLogger().error);
